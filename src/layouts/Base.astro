@@ -1,0 +1,80 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { identity, sameAs } from '../data/identity';
+import { breadcrumbSchema, graph, personSchema, websiteSchema } from '../lib/schema';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Override the canonical URL (e.g. content first published elsewhere). */
+  canonical?: string;
+  ogType?: 'website' | 'article' | 'profile';
+  /** Extra JSON-LD nodes merged into the page @graph. */
+  schema?: object[];
+  breadcrumbs?: { name: string; url: string }[];
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = identity.statement,
+  canonical,
+  ogType = 'website',
+  schema = [],
+  breadcrumbs = [],
+  noindex = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title} · ${identity.name}` : `${identity.name} — AI-Native Delivery & Enterprise Telemetry Leader, Melbourne`;
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/og-default.png', Astro.site).href;
+
+const nodes = [personSchema(), websiteSchema(), ...schema];
+if (breadcrumbs.length) nodes.push(breadcrumbSchema([{ name: 'Home', url: '/' }, ...breadcrumbs]));
+---
+
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="author" content={identity.name} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="light dark" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={identity.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="en_AU" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${identity.name} — everything`} href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${identity.name} — writing`} href="/writing/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${identity.name} — notes`} href="/notes/rss.xml" />
+    {sameAs.map((href) => <link rel="me" href={href} />)}
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(graph(...nodes))} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

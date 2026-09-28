@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getAllPublished } from '../../lib/content';
+import { pillars, type Pillar } from '../../lib/taxonomy';
+
+const all = await getAllPublished();
+const count = (p: Pillar) => all.filter((e) => e.data.pillar === p).length;
+---
+
+<Base
+  title="Topics"
+  description="Five topic pillars: AI-native SDLC, enterprise telemetry, usage monetization, platform architecture and product strategy."
+  breadcrumbs={[{ name: 'Topics', url: '/topics/' }]}
+>
+  <section class="container section">
+    <h1>Topics</h1>
+    <p class="prose muted">Everything on this site belongs to one of five pillars.</p>
+    <div class="grid">
+      {
+        (Object.keys(pillars) as Pillar[]).map((key) => (
+          <article class="card">
+            <h2 class="h3">
+              <a href={`/topics/${key}/`}>{pillars[key].title}</a>
+            </h2>
+            <p>{pillars[key].thesis}</p>
+            <p class="muted">
+              {pillars[key].description} ({count(key)} {count(key) === 1 ? 'item' : 'items'})
+            </p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .h3 {
+    font-size: 1.15rem;
+    margin: 0 0 0.4rem;
+  }
+</style>

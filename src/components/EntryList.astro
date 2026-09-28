@@ -1,0 +1,23 @@
+---
+import EntryCard from './EntryCard.astro';
+import type { AnyEntry } from '../lib/content';
+
+interface Props {
+  entries: AnyEntry[];
+  showType?: boolean;
+  empty?: string;
+}
+const { entries, showType = true, empty = 'Nothing published here yet — check back soon.' } = Astro.props;
+---
+
+{
+  entries.length ? (
+    <div class="grid">
+      {entries.map((entry) => (
+        <EntryCard entry={entry} showType={showType} />
+      ))}
+    </div>
+  ) : (
+    <p class="muted">{empty}</p>
+  )
+}

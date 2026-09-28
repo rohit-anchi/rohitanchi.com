@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getAllPublished } from '../../lib/content';
+import { tagLabel } from '../../lib/taxonomy';
+
+// Only tags in use get a page, so no thin empty pages are indexed.
+export async function getStaticPaths() {
+  const all = await getAllPublished();
+  const used = [...new Set(all.flatMap((e) => e.data.tags))];
+  return used.map((tag) => ({
+    params: { tag },
+    props: { entries: all.filter((e) => (e.data.tags as string[]).includes(tag)) },
+  }));
+}
+
+const { tag } = Astro.params;
+const { entries } = Astro.props;
+const label = tagLabel(tag);
+---
+
+<Base
+  title={`#${label}`}
+  description={`Writing, notes and case studies tagged ${label} by Rohit Anchi.`}
+  breadcrumbs={[{ name: `#${label}`, url: `/tags/${tag}/` }]}
+>
+  <section class="container section">
+    <p class="eyebrow">Tag</p>
+    <h1>#{label}</h1>
+    <EntryList entries={entries} />
+  </section>
+</Base>

@@ -1,0 +1,30 @@
+---
+import { entryLabel, entryUrl, formatDate, type AnyEntry } from '../lib/content';
+
+interface Props {
+  entry: AnyEntry;
+  showType?: boolean;
+}
+const { entry, showType = true } = Astro.props;
+const { title, description, pubDate, draft } = entry.data;
+---
+
+<article class="card">
+  <p class="meta muted">
+    {showType && <span class="badge">{entryLabel(entry)}</span>}
+    <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+    {draft && <span class="badge">Draft</span>}
+  </p>
+  <h3><a href={entryUrl(entry)}>{title}</a></h3>
+  <p class="muted">{description}</p>
+</article>
+
+<style>
+  .meta {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getAllPublished } from '../../lib/content';
+import { pillars, pillarKeys, type Pillar } from '../../lib/taxonomy';
+
+export function getStaticPaths() {
+  return pillarKeys.map((pillar) => ({ params: { pillar } }));
+}
+
+const pillar = Astro.params.pillar as Pillar;
+const info = pillars[pillar];
+const entries = (await getAllPublished()).filter((e) => e.data.pillar === pillar);
+const startHere = entries.filter((e) => e.data.featured);
+---
+
+<Base
+  title={info.title}
+  description={`${info.title}: ${info.description} Writing, case studies and notes by Rohit Anchi.`}
+  breadcrumbs={[
+    { name: 'Topics', url: '/topics/' },
+    { name: info.title, url: `/topics/${pillar}/` },
+  ]}
+>
+  <section class="container section">
+    <p class="eyebrow">Topic</p>
+    <h1>{info.title}</h1>
+    <p class="prose lead">{info.thesis}</p>
+    <p class="prose muted">{info.description}</p>
+    {
+      startHere.length > 0 && (
+        <>
+          <h2>Start here</h2>
+          <EntryList entries={startHere} />
+        </>
+      )
+    }
+    <h2>Everything on {info.title}</h2>
+    <EntryList entries={entries} />
+  </section>
+</Base>
+
+<style>
+  .lead {
+    font-size: 1.15rem;
+  }
+</style>

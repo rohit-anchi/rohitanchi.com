@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// Update monthly; answer engines favour visibly fresh pages.
+const updated = new Date('2026-09-28');
+---
+
+<Base
+  title="Now"
+  description="What Rohit Anchi is focused on right now: AI-native delivery, spec-driven development and enterprise telemetry."
+  breadcrumbs={[
+    { name: 'About', url: '/about/' },
+    { name: 'Now', url: '/about/now/' },
+  ]}
+>
+  <section class="container section prose">
+    <h1>Now</h1>
+    <p class="muted">
+      Updated <time datetime={updated.toISOString()}>{updated.toLocaleDateString('en-AU', { dateStyle: 'long' })}</time>
+      · Melbourne, Australia
+    </p>
+    <ul>
+      <li>Scaling AI-native, spec-driven delivery across five engineering pods.</li>
+      <li>Governed AI adoption: intake, triage and Responsible AI guardrails for agentic workflows.</li>
+      <li>Enterprise telemetry and usage monetization on a modern lakehouse.</li>
+      <li>Building this site and writing in public about the above.</li>
+    </ul>
+  </section>
+</Base>

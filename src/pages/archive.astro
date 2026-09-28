@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import { entryLabel, entryUrl, formatDate, getAllPublished } from '../lib/content';
+
+const all = await getAllPublished();
+const years = [...new Set(all.map((e) => e.data.pubDate.getFullYear()))];
+---
+
+<Base
+  title="Archive"
+  description="Everything Rohit Anchi has published, by year."
+  breadcrumbs={[{ name: 'Archive', url: '/archive/' }]}
+>
+  <section class="container section prose">
+    <h1>Archive</h1>
+    {all.length === 0 && <p class="muted">Nothing published yet.</p>}
+    {
+      years.map((year) => (
+        <>
+          <h2>{year}</h2>
+          <ul class="archive">
+            {all
+              .filter((e) => e.data.pubDate.getFullYear() === year)
+              .map((e) => (
+                <li>
+                  <time class="muted" datetime={e.data.pubDate.toISOString()}>
+                    {formatDate(e.data.pubDate)}
+                  </time>{' '}
+                  <a href={entryUrl(e)}>{e.data.title}</a> <span class="badge">{entryLabel(e)}</span>
+                </li>
+              ))}
+          </ul>
+        </>
+      ))
+    }
+  </section>
+</Base>
+
+<style>
+  .archive {
+    list-style: none;
+    padding: 0;
+  }
+  .archive li {
+    padding: 0.35rem 0;
+  }
+</style>

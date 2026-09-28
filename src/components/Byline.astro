@@ -1,0 +1,18 @@
+---
+import { identity } from '../data/identity';
+---
+
+<aside class="byline card" aria-label="About the author">
+  <p>
+    <strong><a href="/about/" rel="author">{identity.name}</a></strong> — {identity.jobTitle} at {identity.employer},{' '}
+    {identity.location.city}, {identity.location.country}. Writes about AI-native software delivery, spec-driven
+    development, enterprise telemetry and usage monetization.
+  </p>
+</aside>
+
+<style>
+  .byline {
+    margin-top: 3rem;
+    font-size: 0.95rem;
+  }
+</style>

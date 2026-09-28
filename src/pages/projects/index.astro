@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getPublished } from '../../lib/content';
+
+const entries = await getPublished('projects');
+const title = 'Projects';
+const intro = 'Selected work: platforms, tools and prototypes built across telemetry, monetization and AI-native delivery.';
+---
+
+<Base title={title} description={intro} breadcrumbs={[{ name: title, url: '/projects/' }]}>
+  <section class="container section">
+    <h1>{title}</h1>
+    <p class="prose muted">{intro}</p>
+    <EntryList entries={entries} showType={false} />
+  </section>
+</Base>

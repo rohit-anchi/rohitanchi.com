@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import { identity } from '../data/identity';
+
+const topics = [
+  { title: 'Speaking & panels', body: 'AI-native software delivery, spec-driven development, governed AI adoption, enterprise telemetry.' },
+  { title: 'Podcasts & interviews', body: 'Product leadership in the agentic era; usage-based monetization; platform transformation.' },
+  { title: 'Advisory conversations', body: 'Operating models for AI-native delivery; telemetry and monetization platform strategy.' },
+  { title: 'Peer exchange', body: 'Product and engineering leaders in Melbourne and beyond, comparing notes on what works.' },
+];
+---
+
+<Base
+  title="Contact"
+  description="Get in touch with Rohit Anchi (Melbourne, Australia) for speaking, podcasts, advisory conversations and peer exchange on AI-native delivery and enterprise telemetry."
+  breadcrumbs={[{ name: 'Contact', url: '/contact/' }]}
+>
+  <section class="container section">
+    <h1>Contact</h1>
+    <p class="prose">
+      I'm based in {identity.location.city}, {identity.location.country}. I'm happy to talk about:
+    </p>
+    <div class="grid">
+      {
+        topics.map((t) => (
+          <div class="card">
+            <h2 class="h3">{t.title}</h2>
+            <p class="muted">{t.body}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="actions">
+      <a class="button" href={`mailto:${identity.email}`}>Email me</a>
+      <a class="button secondary" href={identity.social.linkedin} rel="me">Connect on LinkedIn</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.4rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+</style>

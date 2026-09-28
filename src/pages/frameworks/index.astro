@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getPublished } from '../../lib/content';
+
+const entries = await getPublished('frameworks');
+const title = 'Frameworks';
+const intro = 'Reusable models, playbooks and checklists for AI-native delivery, enterprise AI adoption and product operating models.';
+---
+
+<Base title={title} description={intro} breadcrumbs={[{ name: title, url: '/frameworks/' }]}>
+  <section class="container section">
+    <h1>{title}</h1>
+    <p class="prose muted">{intro}</p>
+    <EntryList entries={entries} showType={false} />
+  </section>
+</Base>

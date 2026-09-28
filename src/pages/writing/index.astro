@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getAllPublished } from '../../lib/content';
+
+const entries = await getAllPublished(['essays', 'architectureNotes', 'frameworks']);
+const description =
+  'Long-form writing by Rohit Anchi on AI-native software delivery, spec-driven development, enterprise telemetry, usage monetization and platform architecture.';
+---
+
+<Base title="Writing" description={description} breadcrumbs={[{ name: 'Writing', url: '/writing/' }]}>
+  <section class="container section">
+    <h1>Writing</h1>
+    <p class="prose muted">
+      Essays, architecture notes and frameworks. For shorter pieces see <a href="/notes/">field notes</a>; for
+      outcome stories see <a href="/case-studies/">case studies</a>. Subscribe via <a href="/writing/rss.xml">RSS</a>.
+    </p>
+    <EntryList entries={entries} />
+  </section>
+</Base>

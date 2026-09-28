@@ -1,0 +1,133 @@
+---
+import Base from '../layouts/Base.astro';
+import EntryList from '../components/EntryList.astro';
+import MetricStrip from '../components/MetricStrip.astro';
+import { identity } from '../data/identity';
+import { getAllPublished, getPublished } from '../lib/content';
+import { pillars, type Pillar } from '../lib/taxonomy';
+
+const all = await getAllPublished();
+const featured = all.filter((e) => e.data.featured).slice(0, 3);
+const latest = all.slice(0, 6);
+const projects = (await getPublished('projects')).slice(0, 3);
+---
+
+<Base>
+  <section class="container hero">
+    <p class="eyebrow">{identity.name} · {identity.location.city}, {identity.location.country}</p>
+    <h1>{identity.headline}</h1>
+    <p class="lead">{identity.intro}</p>
+    <p class="cta">
+      <a class="button" href="/writing/">Read the writing</a>
+      <a class="button secondary" href="/about/">About me</a>
+    </p>
+  </section>
+
+  <section class="container section">
+    <MetricStrip />
+  </section>
+
+  <section class="container section">
+    <div class="section-head">
+      <h2>Topics</h2>
+      <a href="/topics/">All topics</a>
+    </div>
+    <div class="grid">
+      {
+        (Object.keys(pillars) as Pillar[]).map((key) => (
+          <a class="card pillar" href={`/topics/${key}/`}>
+            <h3>{pillars[key].title}</h3>
+            <p class="muted">{pillars[key].thesis}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    featured.length > 0 && (
+      <section class="container section">
+        <div class="section-head">
+          <h2>Start here</h2>
+        </div>
+        <EntryList entries={featured} />
+      </section>
+    )
+  }
+
+  <section class="container section">
+    <div class="section-head">
+      <h2>Latest</h2>
+      <a href="/archive/">Archive</a>
+    </div>
+    <EntryList entries={latest} empty="First pieces are on the way. Subscribe via RSS to get them." />
+  </section>
+
+  {
+    projects.length > 0 && (
+      <section class="container section">
+        <div class="section-head">
+          <h2>Selected work</h2>
+          <a href="/projects/">All projects</a>
+        </div>
+        <EntryList entries={projects} showType={false} />
+      </section>
+    )
+  }
+
+  <section class="container section">
+    <div class="card about-preview">
+      <h2>About</h2>
+      <p>
+        {identity.yearsExperience}+ years leading revenue-critical platforms, CRM transformations and data pipelines at
+        Dell Technologies, Telstra and Infosys. Today I lead Dell's APEX Usage Monetization domain and its AI-native
+        delivery transformation, bringing spec-driven development, agentic workflows and governed MCP integrations
+        into the SDLC. President's Award winner (Dell, 2020); MIT Professional Education, Applied Data Science.
+      </p>
+      <p><a href="/about/">More about me →</a></p>
+    </div>
+  </section>
+
+  <section class="container section">
+    <h2>Follow along</h2>
+    <p>
+      <a href="/rss.xml">RSS</a> · <a href={identity.social.linkedin} rel="me">LinkedIn</a>{' · '}
+      <a href={identity.social.github} rel="me">GitHub</a> · <a href="/contact/">Get in touch</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-top: 3.5rem;
+    padding-bottom: 1rem;
+  }
+  .hero h1 {
+    max-width: 20ch;
+    font-size: clamp(2.1rem, 5vw, 3.2rem);
+  }
+  .lead {
+    max-width: 62ch;
+    font-size: 1.12rem;
+  }
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  .pillar {
+    color: inherit;
+    text-decoration: none;
+  }
+  .pillar:hover {
+    border-color: var(--accent);
+  }
+  .about-preview h2 {
+    margin-top: 0;
+  }
+  .about-preview p {
+    max-width: var(--measure);
+    margin: 0 0 0.75rem;
+  }
+</style>

@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # Runs `npm run build` (astro check + astro build) and uploads dist/
+      - uses: withastro/action@v6
+        with:
+          node-version: 22
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  indexnow:
+    # Pings Bing/Yandex/Seznam (IndexNow) with the sitemap URLs after each deploy.
+    # Enable by adding a repository variable INDEXNOW_KEY and a matching public/<key>.txt file.
+    needs: deploy
+    if: ${{ vars.INDEXNOW_KEY != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Submit URLs to IndexNow
+        env:
+          KEY: ${{ vars.INDEXNOW_KEY }}
+        run: |
+          urls=$(curl -s https://rohitanchi.com/sitemap-0.xml | grep -o '<loc>[^<]*' | sed 's/<loc>//' | jq -R . | jq -s .)
+          curl -s -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            -d "{\"host\":\"rohitanchi.com\",\"key\":\"$KEY\",\"keyLocation\":\"https://rohitanchi.com/$KEY.txt\",\"urlList\":$urls}" \
+            -w '\nHTTP %{http_code}\n'

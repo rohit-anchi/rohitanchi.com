@@ -1,0 +1,176 @@
+---
+import { render } from 'astro:content';
+import readingTime from 'reading-time';
+import Base from './Base.astro';
+import Byline from '../components/Byline.astro';
+import TagList from '../components/TagList.astro';
+import { contentTypes, entryLabel, entryUrl, formatDate, type AnyEntry } from '../lib/content';
+import { articleSchema, faqSchema } from '../lib/schema';
+import { pillars } from '../lib/taxonomy';
+
+interface Props {
+  entry: AnyEntry;
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const minutesRead = Math.max(1, Math.round(readingTime(entry.body ?? '').minutes));
+const d = entry.data;
+const url = new URL(entryUrl(entry), Astro.site).href;
+const type = contentTypes[entry.collection];
+const indexLabel = { essays: 'Writing', architectureNotes: 'Architecture', frameworks: 'Frameworks', notes: 'Notes', caseStudies: 'Case Studies', projects: 'Projects', talks: 'Speaking' }[entry.collection];
+
+const schema: object[] = [
+  articleSchema({
+    title: d.title,
+    description: d.description,
+    url,
+    pubDate: d.pubDate,
+    updatedDate: d.updatedDate,
+    keywords: [pillars[d.pillar].title, ...d.tags],
+    section: pillars[d.pillar].title,
+  }),
+];
+if (d.faq.length) schema.push(faqSchema(d.faq));
+---
+
+<Base
+  title={d.title}
+  description={d.description}
+  canonical={d.canonicalUrl}
+  ogType="article"
+  schema={schema}
+  breadcrumbs={[
+    { name: indexLabel, url: `/${type.base}/` },
+    { name: d.title, url: entryUrl(entry) },
+  ]}
+  noindex={d.draft}
+>
+  <article class="container section">
+    <header class="prose">
+      <p class="eyebrow">{entryLabel(entry)} · {pillars[d.pillar].title}</p>
+      <h1>{d.title}</h1>
+      <p class="muted meta">
+        By <a href="/about/" rel="author">Rohit Anchi</a>{' · '}
+        <time datetime={d.pubDate.toISOString()}>{formatDate(d.pubDate)}</time>
+        {d.updatedDate && <>{' · Updated '}<time datetime={d.updatedDate.toISOString()}>{formatDate(d.updatedDate)}</time></>}
+        {` · ${minutesRead} min read`}
+        {d.draft && <>{' · '}<span class="badge">Draft</span></>}
+      </p>
+      {
+        d.tldr && (
+          <div class="tldr">
+            <p>
+              <strong>TL;DR:</strong> {d.tldr}
+            </p>
+          </div>
+        )
+      }
+
+      {
+        entry.collection === 'caseStudies' && entry.data.outcomes.length > 0 && (
+          <section class="card panel" aria-label="Outcomes">
+            <p class="muted">
+              {entry.data.role} · {entry.data.org} · {entry.data.period.start}–{entry.data.period.end ?? 'present'}
+            </p>
+            <ul>
+              {entry.data.outcomes.map((o) => (
+                <li>
+                  <strong>{o.value}</strong> {o.metric}
+                  {o.context && <span class="muted"> — {o.context}</span>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        entry.collection === 'frameworks' && (
+          <section class="card panel" aria-label="When to use">
+            <p>
+              <strong>Use when:</strong> {entry.data.useWhen}
+            </p>
+            {entry.data.download && (
+              <p>
+                <a href={entry.data.download} download>
+                  Download the template
+                </a>
+              </p>
+            )}
+          </section>
+        )
+      }
+      {
+        entry.collection === 'projects' && (
+          <section class="card panel" aria-label="Project summary">
+            <p>
+              <strong>Problem:</strong> {entry.data.problem}
+            </p>
+            {entry.data.impact.length > 0 && (
+              <ul>
+                {entry.data.impact.map((i) => (
+                  <li>{i}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )
+      }
+      {
+        entry.collection === 'notes' && entry.data.sourceUrl && (
+          <p class="muted">
+            Source:{' '}
+            <a href={entry.data.sourceUrl} rel="noopener">
+              {entry.data.sourceTitle ?? entry.data.sourceUrl}
+            </a>
+            {entry.data.sourceAuthor && <> by {entry.data.sourceAuthor}</>}
+          </p>
+        )
+      }
+    </header>
+
+    <div class="prose content">
+      <Content />
+    </div>
+
+    {
+      d.faq.length > 0 && (
+        <section class="prose faq">
+          <h2>Frequently asked questions</h2>
+          {d.faq.map((f) => (
+            <details>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </section>
+      )
+    }
+
+    <footer class="prose">
+      <TagList pillar={d.pillar} tags={d.tags} />
+      <Byline />
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .meta {
+    font-size: 0.92rem;
+  }
+  .panel {
+    margin: 1.5rem 0;
+  }
+  .panel ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.2rem;
+  }
+  .faq details {
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 0;
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+</style>

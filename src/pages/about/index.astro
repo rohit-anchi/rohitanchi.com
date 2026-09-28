@@ -1,0 +1,127 @@
+---
+import Base from '../../layouts/Base.astro';
+import MetricStrip from '../../components/MetricStrip.astro';
+import { identity } from '../../data/identity';
+import { awards, timeline } from '../../data/career';
+import { PERSON_ID } from '../../lib/schema';
+
+const fmt = (ym: string) =>
+  new Date(`${ym}-01T00:00:00Z`).toLocaleDateString('en-AU', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+const profilePage = {
+  '@type': 'ProfilePage',
+  url: new URL('/about/', Astro.site).href,
+  mainEntity: { '@id': PERSON_ID },
+  inLanguage: 'en-AU',
+};
+---
+
+<Base
+  title="About"
+  description={identity.statement}
+  ogType="profile"
+  schema={[profilePage]}
+  breadcrumbs={[{ name: 'About', url: '/about/' }]}
+>
+  <section class="container section">
+    <div class="prose">
+      <h1>About Rohit Anchi</h1>
+      <p class="lead">{identity.statement}</p>
+      <p>
+        I've spent {identity.yearsExperience}+ years managing large, revenue-critical business products, CRM
+        transformations and multi-tier data pipelines. My work sits where operational transformation, enterprise
+        architecture and commercial resilience meet.
+      </p>
+      <p>
+        At Dell Technologies I'm the domain lead for APEX Usage Monetization, owning the end-to-end commercial roadmap
+        and leading 30+ engineering and product people across five cross-functional pods. I led the enterprise
+        adoption of AI-native software delivery there, bringing contextual augmented generation, governed Model
+        Context Protocol (MCP) integrations and spec-driven development into the SDLC. The goal is fast,
+        high-agency prototyping inside firm Responsible AI guardrails.
+      </p>
+      <p>
+        Before Dell, I spent eight years at Telstra as a solutions architect and solutions owner, leading CRM
+        transformations across Salesforce, Vlocity and Siebel. Before that I spent eight years at Infosys, delivering
+        CRM and data programs for Tier-1 clients across Australia and APAC.
+      </p>
+      <p><a href="/about/now/">What I'm focused on now →</a> · <a href="/contact/">Get in touch →</a></p>
+    </div>
+  </section>
+
+  <section class="container section">
+    <h2>Selected outcomes</h2>
+    <MetricStrip />
+  </section>
+
+  <section class="container section prose">
+    <h2>Experience</h2>
+    <ol class="timeline">
+      {
+        timeline.map((role) => (
+          <li>
+            <p class="muted when">
+              {fmt(role.start)} – {role.end ? fmt(role.end) : 'Present'} · {role.org}
+            </p>
+            <h3>{role.title}</h3>
+            <p>{role.summary}</p>
+            <ul>
+              {role.highlights.map((h) => (
+                <li>{h}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="container section prose">
+    <h2>Honours &amp; awards</h2>
+    <ul>
+      {
+        awards.map((a) => (
+          <li>
+            <strong>{a.name}</strong> — {a.org}
+            {a.year && `, ${a.year}`}
+            {a.detail && <span class="muted"> · {a.detail}</span>}
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2>Education</h2>
+    <ul>
+      {
+        identity.education.map((e) => (
+          <li>
+            <strong>{e.name}</strong> — {e.credential}, {e.year}
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2>Certifications</h2>
+    <ul>{identity.certifications.map((c) => <li>{c}</li>)}</ul>
+  </section>
+</Base>
+
+<style>
+  .lead {
+    font-size: 1.12rem;
+  }
+  .timeline {
+    list-style: none;
+    padding: 0;
+  }
+  .timeline > li {
+    border-left: 2px solid var(--border);
+    padding: 0 0 1.5rem 1.2rem;
+  }
+  .timeline h3 {
+    margin: 0.1rem 0 0.4rem;
+  }
+  .when {
+    margin: 0;
+    font-size: 0.88rem;
+  }
+</style>

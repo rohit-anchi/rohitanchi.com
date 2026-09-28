@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getPublished } from '../../lib/content';
+
+const entries = await getPublished('architectureNotes');
+const title = 'Architecture Notes';
+const intro = 'Decision records and diagrams on platform, telemetry and monetization architecture — what was decided, why, and the trade-offs.';
+---
+
+<Base title={title} description={intro} breadcrumbs={[{ name: title, url: '/architecture/' }]}>
+  <section class="container section">
+    <h1>{title}</h1>
+    <p class="prose muted">{intro}</p>
+    <EntryList entries={entries} showType={false} />
+  </section>
+</Base>

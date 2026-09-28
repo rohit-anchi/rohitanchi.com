@@ -1,0 +1,20 @@
+---
+import { pillars, tagLabel, type Pillar } from '../lib/taxonomy';
+
+interface Props {
+  pillar: Pillar;
+  tags: readonly string[];
+}
+const { pillar, tags } = Astro.props;
+---
+
+<ul class="tags" aria-label="Topics">
+  <li><a href={`/topics/${pillar}/`}><strong>{pillars[pillar].title}</strong></a></li>
+  {
+    tags.map((t) => (
+      <li>
+        <a href={`/tags/${t}/`}>#{tagLabel(t)}</a>
+      </li>
+    ))
+  }
+</ul>

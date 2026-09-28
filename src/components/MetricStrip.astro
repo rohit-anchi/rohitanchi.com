@@ -1,0 +1,47 @@
+---
+import { metrics } from '../data/career';
+---
+
+<ul class="metrics" aria-label="Proof points">
+  {
+    metrics.map((m) => (
+      <li>
+        <strong>{m.value}</strong>
+        <span>{m.label}</span>
+        <small class="muted">{m.context}</small>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  strong {
+    font-size: 1.8rem;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  span {
+    font-weight: 600;
+  }
+  small {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+</style>

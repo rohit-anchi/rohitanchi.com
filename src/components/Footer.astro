@@ -1,0 +1,44 @@
+---
+import { identity } from '../data/identity';
+
+const year = new Date().getFullYear();
+const links = [
+  { href: '/notes/', label: 'Notes' },
+  { href: '/frameworks/', label: 'Frameworks' },
+  { href: '/projects/', label: 'Projects' },
+  { href: '/archive/', label: 'Archive' },
+  { href: '/about/now/', label: 'Now' },
+  { href: '/rss.xml', label: 'RSS' },
+];
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <nav aria-label="Footer">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      <a href={identity.social.linkedin} rel="me">LinkedIn</a>
+      <a href={identity.social.github} rel="me">GitHub</a>
+    </nav>
+    <p class="muted">
+      © {year} {identity.name} · {identity.location.city}, {identity.location.country}. Views are my own and do not
+      represent my employer.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 4rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+  }
+  nav a {
+    color: var(--muted);
+  }
+</style>
